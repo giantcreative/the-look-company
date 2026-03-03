@@ -46,6 +46,10 @@ function salient_child_enqueue_styles() {
   if ( is_page('the-look-group') ) {
     wp_enqueue_style( 'tlc-the-look-group-style', get_stylesheet_directory_uri() . '/assets/css/the-look-group.min.css', '', $nectar_theme_version );
   }
+  if ( is_page('careers') ) {
+    wp_enqueue_style( 'tlc-careers-style', get_stylesheet_directory_uri() . '/assets/css/careers.min.css', '', $nectar_theme_version );
+    wp_enqueue_script( 'tlc-form-js' );
+  }
   if ( is_page('thank-you') ) {
     wp_enqueue_style( 'tlc-thank-you-style', get_stylesheet_directory_uri() . '/assets/css/thank-you.min.css', '', $nectar_theme_version );
   }
