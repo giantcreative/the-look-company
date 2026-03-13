@@ -18,7 +18,7 @@
       }
       > li {
         > a {
-          font-family: "aktiv-grotesk";
+          font-family: $font-primary;
           font-size: 16px;
           text-transform: uppercase;
           font-weight: 700;
@@ -38,7 +38,7 @@
           > li {
             > a {
               display: inline-block;
-              font-family: "aktiv-grotesk";
+              font-family: $font-primary;
               font-size: 16px;
               font-weight: 400;
               letter-spacing: 1.6px;
@@ -58,7 +58,7 @@
     .col.span_5 {
       width: 100%;
       p {
-        font-family: "aktiv-grotesk";
+        font-family: $font-primary;
         font-size: 15px;
         font-weight: 400;
         a:not(.nectar-button) {

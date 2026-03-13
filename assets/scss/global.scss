@@ -5,14 +5,14 @@ body[data-header-resize="0"] .container-wrap, body[data-header-resize="0"] .proj
   padding-top: 0 !important;
 }
 body, html, .testimonial_slider:not([data-style*=multiple_visible]) blockquote, blockquote {
-  font-family: "Gotham", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: $font-body;
   font-size: 16px;
 }
 .clarendon-text-pro {
-  font-family: "clarendon-text-pro", serif;
+  font-family: $font-display;
 }
 h1 {
-  font-family:"clarendon-text-pro";
+  font-family: $font-display;
   letter-spacing: 1.8px !important;
   @include desktop {
     letter-spacing: 3.54px !important;
@@ -24,11 +24,11 @@ h1, h2 {
   }
 }
 h2,h3,h4,h5{
-  font-family: "aktiv-grotesk-thin",sans-serif;
+  font-family: $font-primary;
 }
 .accessibility h2,
 .privacy-policy h2 {
-  font-family:"clarendon-text-pro";
+  font-family: $font-display;
   font-size: 30px;
   line-height: 1.4;
   strong {
@@ -46,7 +46,7 @@ h2,h3,h4,h5{
 .light .kicker p,
 p.kicker,
 .kicker p {
-  font-family:"clarendon-text-pro";
+  font-family: $font-display;
   color: $brand-red !important;
   font-size: 26.06px;
   font-weight: 700;
