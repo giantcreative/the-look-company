@@ -11,6 +11,15 @@ add_filter( 'nectar_activate_transparent_header', function ( $active ) {
 } );
 
 /**
+ * Add preconnect hints for Adobe Fonts (Typekit) to reduce render-blocking latency.
+ * Priority 1 fires early in wp_head, before Salient adds its own tags.
+ */
+add_action( 'wp_head', function () {
+  echo '<link rel="preconnect" href="https://use.typekit.net" crossorigin>' . "\n";
+  echo '<link rel="dns-prefetch" href="https://use.typekit.net">' . "\n";
+}, 1 );
+
+/**
  * Force dark header colour on single posts via an inline style.
  *
  * Outputs a small <style> block in wp_head rather than filtering every
