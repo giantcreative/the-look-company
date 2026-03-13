@@ -11,12 +11,18 @@ add_filter( 'nectar_activate_transparent_header', function ( $active ) {
 } );
 
 /**
- * Add preconnect hints for Adobe Fonts (Typekit) to reduce render-blocking latency.
- * Priority 1 fires early in wp_head, before Salient adds its own tags.
+ * Add resource hints early in wp_head (priority 1):
+ * - Preconnect/dns-prefetch for Adobe Fonts (Typekit)
+ * - Preload for the two most-used Gotham weights so the browser fetches
+ *   them immediately rather than waiting to discover them via CSS.
  */
 add_action( 'wp_head', function () {
+  $fonts_uri = get_stylesheet_directory_uri() . '/fonts';
+
   echo '<link rel="preconnect" href="https://use.typekit.net" crossorigin>' . "\n";
   echo '<link rel="dns-prefetch" href="https://use.typekit.net">' . "\n";
+  echo '<link rel="preload" href="' . $fonts_uri . '/Gotham-Book.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
+  echo '<link rel="preload" href="' . $fonts_uri . '/Gotham-Bold.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
 }, 1 );
 
 /**

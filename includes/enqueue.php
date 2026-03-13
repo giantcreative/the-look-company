@@ -3,7 +3,7 @@
 add_action( 'wp_enqueue_scripts', 'salient_child_enqueue_styles', 100 );
 
 function salient_child_enqueue_styles() {
-  $v = nectar_get_theme_version();
+  $v = TLC_VERSION;
 
   wp_enqueue_style( 'theme-custom-style', get_stylesheet_directory_uri() . '/assets/css/style.min.css', array(), $v );
   wp_register_script( 'tlc-form-js', get_stylesheet_directory_uri() . '/assets/js/forms.js', array( 'jquery' ), '', true );
