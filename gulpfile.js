@@ -8,6 +8,9 @@ const rename      = require("gulp-rename");
 const terser      = require("gulp-terser");
 const concat      = require("gulp-concat");
 const imagemin    = require("gulp-imagemin");
+const { generate: generateCritical } = require("critical");
+const fs        = require("fs");
+const postcssLib = require("postcss");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -154,6 +157,71 @@ function optimizeImages() {
 // }
 
 // ---------------------------------------------------------------------------
+// Critical CSS
+// ---------------------------------------------------------------------------
+
+// Run manually after `gulp build`: gulp critical
+// Requires the local dev site to be running at SITE_URL.
+const SITE_URL = "https://tlc.giantcreative.local";
+
+// All pages to extract critical CSS from.
+// Critical CSS is merged and deduplicated into a single critical.min.css.
+const CRITICAL_PAGES = [
+  "/",
+  "/contact",
+  "/our-companies",
+  "/retail-solutions",
+  "/sports-and-events",
+  "/meet-our-team",
+  "/faq",
+  "/videos",
+  "/guides",
+  "/our-work",
+  "/brand-activations",
+  "/the-look-group",
+  "/careers",
+  "/lightboxes",
+  "/fabric-and-frames",
+  "/display-systems",
+  "/signs-and-banners",
+  "/services",
+  "/thank-you",
+];
+
+const CRITICAL_OPTIONS = {
+  css:    [ "assets/css/style.min.css" ],
+  dimensions: [
+    { width: 375,  height: 812 },  // mobile
+    { width: 768,  height: 1024 }, // tablet
+    { width: 1440, height: 900 },  // desktop
+  ],
+  inline: false,
+  ignore: { atrule: [ "@font-face" ] },
+  request: { https: { rejectUnauthorized: false } },
+  penthouse: {
+    chromiumFlags: [ "--ignore-certificate-errors" ],
+    chromePath: "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
+  },
+};
+
+async function critical() {
+  const chunks = [];
+
+  for (const page of CRITICAL_PAGES) {
+    console.log(`  → Extracting critical CSS: ${page}`);
+    const { css } = await generateCritical({ ...CRITICAL_OPTIONS, src: SITE_URL + page });
+    chunks.push(css);
+  }
+
+  // Merge all collected CSS and deduplicate/minify via cssnano.
+  const merged   = chunks.join("\n");
+  const result   = await postcssLib([ cssnano() ]).process(merged, { from: undefined });
+
+  fs.writeFileSync("assets/css/critical.min.css", result.css);
+  console.log(`  ✓ critical.min.css written (${(result.css.length / 1024).toFixed(1)} KB)`);
+}
+
+// ---------------------------------------------------------------------------
 // Watcher
 // ---------------------------------------------------------------------------
 
@@ -166,9 +234,10 @@ function watcher() {
 // Exports
 // ---------------------------------------------------------------------------
 
-exports.styles  = stylesBuild;
-exports.scripts = scriptsBuild;
-exports.images  = optimizeImages;
+exports.styles   = stylesBuild;
+exports.scripts  = scriptsBuild;
+exports.images   = optimizeImages;
+exports.critical = critical;
 
 // gulp dev  — source maps, no minification, then watch
 exports.dev = series(parallel(stylesDev, scriptsDev), watcher);
