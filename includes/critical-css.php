@@ -15,38 +15,42 @@
  * If critical.min.css does not exist, falls back to standard stylesheet load.
  */
 add_action( 'wp_head', function () {
-  $critical_file = get_stylesheet_directory() . '/assets/css/critical.min.css';
+  $slug = is_front_page() ? 'home' : get_post_field( 'post_name', get_the_ID() );
+  $critical_file = get_stylesheet_directory() . "/assets/css/critical-{$slug}.min.css";
 
+  // Fallback to global if page-specific doesn't exist
   if ( ! file_exists( $critical_file ) ) {
-    return;
+    $critical_file = get_stylesheet_directory() . '/assets/css/critical.min.css';
   }
 
-  $critical_css = file_get_contents( $critical_file );
-
-  if ( empty( $critical_css ) ) {
-    return;
+  if ( file_exists( $critical_file ) ) {
+    $critical_css = file_get_contents( $critical_file );
+    echo '<style id="tlc-critical-css">' . $critical_css . '</style>' . "\n";
   }
 
-  echo '<style id="tlc-critical-css">' . $critical_css . '</style>' . "\n";
-}, 1 );
+  // 2. Load the Polyfill from the local assets folder
+  $polyfill_path = get_stylesheet_directory() . '/assets/js/cssrelpreload.min.js';
+
+  if ( file_exists( $polyfill_path ) ) {
+    echo '<script id="loadcss-polyfill">' . file_get_contents( $polyfill_path ) . '</script>' . "\n";
+  }
+}, 2 );
 
 /**
- * Convert the main stylesheet to async load when critical CSS is present.
+ * Convert stylesheets to async load when critical CSS is present.
+ * Targets the main style and any page-specific styles (starting with tlc-).
  */
-add_filter( 'style_loader_tag', function ( $html, $handle ) {
-  if ( $handle !== 'theme-custom-style' ) {
+
+
+ add_filter( 'style_loader_tag', function ( $html, $handle ) {
+  // Targets theme-custom-style AND any page-specific handles like tlc-contact-style
+  $is_target = ( $handle === 'theme-custom-style' || strpos( $handle, 'tlc-' ) === 0 );
+
+  if ( ! $is_target ) {
     return $html;
   }
 
-  $critical_file = get_stylesheet_directory() . '/assets/css/critical.min.css';
-
-  if ( ! file_exists( $critical_file ) ) {
-    return $html;
-  }
-
-  // Preload pattern: loads CSS without blocking render.
-  // onload switches rel to stylesheet once loaded.
-  // <noscript> ensures CSS loads for users with JS disabled.
+  // Preload pattern: works with the inlined cssrelpreload.min.js polyfill
   $async = str_replace(
     "rel='stylesheet'",
     "rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"",

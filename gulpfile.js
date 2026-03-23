@@ -33,6 +33,13 @@ const paths = {
   },
 };
 
+const cssnanoOptions = {
+  preset: ['default', {
+    discardComments: { removeAll: true },
+    uniqueSelectors: true,
+  }]
+};
+
 // ---------------------------------------------------------------------------
 // CSS helpers
 // ---------------------------------------------------------------------------
@@ -47,7 +54,7 @@ const paths = {
 function buildCSS(file, outName, isDev = false) {
   const plugins = isDev
     ? [autoprefixer()]
-    : [autoprefixer(), cssnano()];
+    : [autoprefixer(), cssnano(cssnanoOptions)];
 
   return function compile() {
     let stream = src(file).pipe(sourcemaps.init());
@@ -104,14 +111,11 @@ const stylesDev   = parallel(...cssEntries.map(([file, out]) => buildCSS(file, o
 
 function buildJS(isDev = false) {
   return function scripts() {
-    let stream = src(paths.js.src)
-      .pipe(concat("forms.js"));
 
-    if (!isDev) {
-      stream = stream.pipe(terser());
-    }
-
-    return stream.pipe(dest(paths.js.dest));
+    return src([ paths.js.src]) // Combine vendor + your src
+      .pipe(concat("forms.js"))
+      .pipe(isDev ? sourcemaps.init() : terser())
+      .pipe(dest(paths.js.dest));
   };
 }
 
@@ -137,25 +141,6 @@ function optimizeImages() {
     ]))
     .pipe(dest(paths.images.dest));
 }
-
-// ---------------------------------------------------------------------------
-// Critical CSS — TODO
-// ---------------------------------------------------------------------------
-//
-// Critical CSS extraction requires a running local server.
-// To enable it:
-//   1. npm install --save-dev critical
-//   2. Set SITE_URL below to your local dev URL.
-//   3. Uncomment the task and add it to the `build` export.
-//
-// const { stream: critical } = require("critical");
-// const SITE_URL = "https://the-look-company.local";
-//
-// function criticalCSS() {
-//   return src("path/to/template.html")
-//     .pipe(critical({ base: "./", inline: true, css: ["./assets/css/style.min.css"] }))
-//     .pipe(dest("./assets/css/critical"));
-// }
 
 // ---------------------------------------------------------------------------
 // Critical CSS
@@ -206,20 +191,34 @@ const CRITICAL_OPTIONS = {
 };
 
 async function critical() {
-  const chunks = [];
-
   for (const page of CRITICAL_PAGES) {
-    console.log(`  → Extracting critical CSS: ${page}`);
-    const { css } = await generateCritical({ ...CRITICAL_OPTIONS, src: SITE_URL + page });
-    chunks.push(css);
+    const slug = page === '/' ? 'home' : page.replace('/', '');
+    console.log(`  → Extracting critical CSS for: ${slug}`);
+
+    // Scan global CSS + specific page CSS (fixes the 28K/23K issue)
+    const cssFiles = ["assets/css/style.min.css"];
+    const pageCss = `assets/css/${slug}.min.css`;
+    if (fs.existsSync(pageCss)) { cssFiles.push(pageCss); }
+
+    const { css } = await generateCritical({
+      ...CRITICAL_OPTIONS,
+      src: SITE_URL + page,
+      css: cssFiles,
+    });
+
+    // Clean up duplicates and comments using the new options
+    const result = await postcssLib([ cssnano(cssnanoOptions) ]).process(css, { from: undefined });
+
+    fs.writeFileSync(`assets/css/critical-${slug}.min.css`, result.css);
   }
+}
 
-  // Merge all collected CSS and deduplicate/minify via cssnano.
-  const merged   = chunks.join("\n");
-  const result   = await postcssLib([ cssnano() ]).process(merged, { from: undefined });
-
-  fs.writeFileSync("assets/css/critical.min.css", result.css);
-  console.log(`  ✓ critical.min.css written (${(result.css.length / 1024).toFixed(1)} KB)`);
+// Task to move loadCSS polyfill to the assets folder
+function copyLoadCSS() {
+  return src("./node_modules/fg-loadcss/src/cssrelpreload.js")
+    .pipe(terser()) // Minify it while we're at it
+    .pipe(rename("cssrelpreload.min.js"))
+    .pipe(dest(paths.js.dest));
 }
 
 // ---------------------------------------------------------------------------
@@ -235,16 +234,17 @@ function watcher() {
 // Exports
 // ---------------------------------------------------------------------------
 
+
 exports.styles   = stylesBuild;
 exports.scripts  = scriptsBuild;
 exports.images   = optimizeImages;
 exports.critical = critical;
 
 // gulp dev  — source maps, no minification, then watch
-exports.dev = series(parallel(stylesDev, scriptsDev), watcher);
+exports.dev = series(parallel(stylesDev, scriptsDev, copyLoadCSS), watcher);
 
 // gulp build — full production pipeline
-exports.build = parallel(stylesBuild, scriptsBuild, optimizeImages);
+exports.build = parallel(stylesBuild, scriptsBuild, optimizeImages, copyLoadCSS);
 
 // default: production build + watch (matches previous behaviour)
 exports.default = series(exports.build, watcher);

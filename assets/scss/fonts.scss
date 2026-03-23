@@ -142,3 +142,12 @@
     font-display: swap;
 }
 
+/* Adjusted Arial to match Gotham's metrics */
+@font-face {
+    font-family: 'Gotham-Fallback';
+    src: local('Arial');
+    size-adjust: 103%;      /* Gotham is slightly wider/larger than Arial */
+    ascent-override: 94%;   /* Matches Gotham's cap height */
+    descent-override: 20%;
+    line-gap-override: 0%;
+}
