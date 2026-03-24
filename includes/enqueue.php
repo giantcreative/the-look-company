@@ -35,6 +35,10 @@ function salient_child_enqueue_styles() {
     wp_enqueue_style( 'tlc-case-study-style', get_stylesheet_directory_uri() . '/assets/css/case-studies.min.css', array(), $v );
   }
 
+  if ( is_singular( 'landing_pages' ) ) {
+    wp_enqueue_style( 'tlc-landing-page-style', get_stylesheet_directory_uri() . '/assets/css/landing-pages.min.css', array(), $v );
+  }
+
   // Video taxonomy archive.
   if ( is_tax( 'video-category' ) ) {
     wp_enqueue_style( 'tlc-videos-style', get_stylesheet_directory_uri() . '/assets/css/videos.min.css', array(), $v );
