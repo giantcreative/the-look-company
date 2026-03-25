@@ -28,6 +28,10 @@ body[data-form-submit=regular] .container-wrap .gform_wrapper.gform-theme--found
   .gfield {
     position: relative;
 
+    &[class*=gfield--type-handl] {
+      display: none;
+    }
+
     .gfield_label {
       margin-top: 0 !important;
       font-weight: 400 !important;
