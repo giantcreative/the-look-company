@@ -329,3 +329,39 @@ body #error-404 .nectar-button {
     }
   }
 }
+
+/* END LEGAL PAGE STYLES */
+
+/* STYLES FOR BUTTONS */
+nectar-cta[data-color="accent-color"]:not([data-style="material"]),
+body[data-button-style^="rounded"] {
+  .link_text,
+  .nectar-button.large {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    @include tablet {
+      font-size: 16px !important;
+    }
+    @include desktop {
+      font-size: 18px !important;
+    }
+  }
+  .nectar-button.large,
+  .link_wrap {
+    padding: 12px 32px !important;
+    line-height: 1.4 !important;
+    @include tablet {
+      padding: 12px 48px !important;
+    }
+    @include desktop {
+      padding: 12px 54px !important;
+    }
+  }
+  .nectar-button.large {
+    border: 2px solid $primary-color !important;
+    &:hover {
+      background-color: transparent !important;
+      color: $primary-color !important;
+    }
+  }
+}
