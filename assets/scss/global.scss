@@ -335,7 +335,7 @@ body #error-404 .nectar-button {
 /* STYLES FOR BUTTONS */
 nectar-cta[data-color="accent-color"]:not([data-style="material"]),
 body[data-button-style^="rounded"] {
-  .link_text,
+  .nectar-cta:not(.has-icon ) .link_wrap .link_text,
   .nectar-button.large {
     font-size: 14px !important;
     line-height: 1.4 !important;
@@ -347,7 +347,7 @@ body[data-button-style^="rounded"] {
     }
   }
   .nectar-button.large,
-  .link_wrap {
+  .nectar-cta:not(.has-icon) .link_wrap {
     padding: 12px 32px !important;
     line-height: 1.4 !important;
     @include tablet {
