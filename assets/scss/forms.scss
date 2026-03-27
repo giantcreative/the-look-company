@@ -66,13 +66,24 @@ body[data-form-submit=regular] .container-wrap .gform_wrapper.gform-theme--found
     }
 
     &.gfield--type-fileupload{
+      border-radius: 0 !important;
       .gfield_label {
         position: absolute;
-        left: 24px;
-        top: 3px;
-        font-size: 12px;
+        left: 0;
+        top: 0;
+        font-size: 15px;
         opacity: 1;
         background: inherit;
+      }
+      input {
+        padding-left: 0 !important;
+        padding-bottom: 0 !important;
+        border-radius: 0 !important;
+      }
+      .gfield_description {
+        margin-top: 0 !important;
+        line-height: 1.4;
+        font-size: 12px;
       }
     }
 
