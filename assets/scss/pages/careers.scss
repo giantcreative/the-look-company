@@ -108,4 +108,50 @@
       }
     }
   }
+  &__open-positions {
+    .job-listings-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+      @include tablet {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @include mobile {
+        grid-template-columns: 1fr;
+      }
+      .job-item {
+        background-image: url('/wp-content/uploads/2026/02/bg-texture.svg');
+        background-size: cover;
+        border: 2px solid #ddd;
+        padding: 24px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+            align-items: flex-start;
+        h3 {
+          margin-top: 0;
+          font-size: 24px;
+          font-family: $font-display;
+          font-weight: 800;
+          line-height: 1.4;
+        }
+        a {
+          margin-top: auto;
+          color: $primary-color;
+          background-color: transparent;
+          border: 2px solid $primary-color;
+          padding: 6px 14px;
+          border-radius: 50px;
+          font-size: 13px;
+          text-decoration: none;
+          transition: all 0.45s cubic-bezier(0.25, 1, 0.33, 1) !important;
+          &:hover {
+            background-color: $primary-color;
+            color: $white;
+          }
+        }
+      }
+    }
+  }
 }
