@@ -13,3 +13,4 @@ require_once get_stylesheet_directory() . '/includes/landing-page-rewrites.php';
 require_once get_stylesheet_directory() . '/includes/acf-hooks.php';
 require_once get_stylesheet_directory() . '/includes/form-filters.php';
 require_once get_stylesheet_directory() . '/includes/open-positions-sc.php';
+require_once get_stylesheet_directory() . '/includes/acf-page-schema.php';

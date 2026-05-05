@@ -64,6 +64,9 @@
     }
   }
   &__gallery {
+    .sgim__select-listbox{
+      overscroll-behavior:contain;
+    }
     .sgim__filters {
       background: #0C0D0E;
       padding: 14px;
