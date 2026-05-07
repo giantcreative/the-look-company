@@ -85,6 +85,19 @@ body[data-bg-header="true"].blog {
       padding: 120px 0  !important;
     }
   }
+  .posts-container article div.post-content-wrap .post-featured-img-wrap,
+  .posts-container article div.post-content-wrap {
+    min-height: 205px !important;
+  }
+  .posts-container article div.post-content-wrap div.post-header .title a,
+  .posts-container article div.post-content-wrap div.post-header .title {
+    font-size: 20px !important;
+    line-height: 1.375 !important;
+  }
+  .posts-container article div.post-content-wrap .excerpt {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
 }
 .scf-blog-filter-ui {
   &__buttons {
@@ -142,7 +155,6 @@ body.wp-singular.single.single-post {
           padding: 96px 0 !important;
         }
         .col.span_12.section-title.blog-title {
-
           .post-featured-image {
             padding-top: 40px !important;
             @include tablet {
